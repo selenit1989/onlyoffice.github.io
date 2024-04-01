@@ -39,123 +39,123 @@
     displayFunction(displaySettings);
   });
   //  Display context menu if the text is selected
-  window.Asc.plugin.event_onContextMenuShow = function (options) {
+  // window.Asc.plugin.event_onContextMenuShow = function (options) {
 
-    if (options.type === "Selection") { // Check if the text is selected
-      console.log(options)
+  //   if (options.type === "Selection") { // Check if the text is selected
+  //     console.log(options)
 
-      window.Asc.plugin.executeMethod("GetSelectionType", [], function (sType) {
-        console.log(sType)
-        switch (sType) {
+  //     window.Asc.plugin.executeMethod("GetSelectionType", [], function (sType) {
+  //       console.log(sType)
+  //       switch (sType) {
 
-          case "none":
-            console.log("swith none")
+  //         case "none":
+  //           console.log("swith none")
+  //           // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+  //           window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+  //             guid: window.Asc.plugin.guid,
+  //             items: []
+  //           }]);
+  //           break;
+
+  //         case "text":
+  //           console.log("swith text")
+  //           // Execute method to get selected text
+  //           window.Asc.plugin.executeMethod("GetSelectedText", [{
+  //             Numbering: false,
+  //             Math: false,
+  //             TableCellSeparator: "\n",
+  //             ParaSeparator: "\n",
+  //             TabSymbol: String.fromCharCode(9),
+  //           }], function (data) {
+  //             if (typeof data === 'string') {
+  //               selectedText = data.trim();
+  //             console.log("the selected text is" + selectedText);
+  //             } else {
+  //               console.log("the data is not a string")
+
+  //             }
+              
+
+  //             if (selectedText !== "") {
+  //               // If text is selected and it is not an empty string, add the context menu item for generating QR code
+  //               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+  //                 guid: window.Asc.plugin.guid,
+  //                 items: [{
+  //                   id: 'GenerateQR',
+  //                   text: generateText('Insert QR')
+  //                 }]
+  //               }]);
+  //             } else {
+  //               console.log(" no swith 1st else")
+  //               // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+  //               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+  //                 guid: window.Asc.plugin.guid,
+  //                 items: []
+  //               }]);
+  //             }
+  //           });
+  //           break;
+  //       }
+  //     });
+
+  //   } else {
+  //     console.log("no swith 2nd else")
+  //     // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+  //     window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+  //       guid: window.Asc.plugin.guid,
+  //       items: []
+  //     }]);
+  //   }
+  // };
+
+    //  Display context menu if the text is selected
+    window.Asc.plugin.event_onContextMenuShow = function (options) {
+
+      if (options.type === "Selection") { // Check if the text is selected
+        // Execute method to get selected text
+        window.Asc.plugin.executeMethod ("GetSelectionType", [], function(sType) {
+          console.log(sType)
+      });
+
+        window.Asc.plugin.executeMethod("GetSelectedText", [{
+          Numbering: false,
+          Math: false,
+          TableCellSeparator: "\n",
+          ParaSeparator: "\n",
+          TabSymbol: String.fromCharCode(9),
+        }], function (data) {
+          if (typeof data === 'string') {
+            selectedText = data.trim();
+            console.log("the selected text is" + selectedText);  
+          } else {
+            console.log("the data is not a string")
+          }
+         
+          if (selectedText !== "") {
+            // If text is selected and it is not an empty string, add the context menu item for generating QR code
+            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+              guid: window.Asc.plugin.guid,
+              items: [{
+                id: 'GenerateQR',
+                text: generateText('Insert QR')
+              }]
+            }]);
+          } else {
             // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
             window.Asc.plugin.executeMethod("AddContextMenuItem", [{
               guid: window.Asc.plugin.guid,
               items: []
             }]);
-            break;
-
-          case "text":
-            console.log("swith text")
-            // Execute method to get selected text
-            window.Asc.plugin.executeMethod("GetSelectedText", [{
-              Numbering: false,
-              Math: false,
-              TableCellSeparator: "\n",
-              ParaSeparator: "\n",
-              TabSymbol: String.fromCharCode(9),
-            }], function (data) {
-              if (typeof data === 'string') {
-                selectedText = data.trim();
-              console.log("the selected text is" + selectedText);
-              } else {
-                console.log("the data is not a string")
-
-              }
-              
-
-              if (selectedText !== "") {
-                // If text is selected and it is not an empty string, add the context menu item for generating QR code
-                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                  guid: window.Asc.plugin.guid,
-                  items: [{
-                    id: 'GenerateQR',
-                    text: generateText('Insert QR')
-                  }]
-                }]);
-              } else {
-                console.log(" no swith 1st else")
-                // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                  guid: window.Asc.plugin.guid,
-                  items: []
-                }]);
-              }
-            });
-            break;
-        }
-      });
-
-    } else {
-      console.log("no swith 2nd else")
-      // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-      window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-        guid: window.Asc.plugin.guid,
-        items: []
-      }]);
-    }
-  };
-
-    //  Display context menu if the text is selected
-    // window.Asc.plugin.event_onContextMenuShow = function (options) {
-
-    //   if (options.type === "Selection") { // Check if the text is selected
-    //     // Execute method to get selected text
-    //     window.Asc.plugin.executeMethod ("GetSelectionType", [], function(sType) {
-    //       console.log(sType)
-    //   });
-
-    //     window.Asc.plugin.executeMethod("GetSelectedText", [{
-    //       Numbering: false,
-    //       Math: false,
-    //       TableCellSeparator: "\n",
-    //       ParaSeparator: "\n",
-    //       TabSymbol: String.fromCharCode(9),
-    //     }], function (data) {
-    //       if (typeof data === 'string') {
-    //         selectedText = data.trim();
-    //         console.log("the selected text is" + selectedText);  
-    //       } else {
-    //         console.log("the data is not a string")
-    //       }
-         
-    //       if (selectedText !== "") {
-    //         // If text is selected and it is not an empty string, add the context menu item for generating QR code
-    //         window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-    //           guid: window.Asc.plugin.guid,
-    //           items: [{
-    //             id: 'GenerateQR',
-    //             text: generateText('Insert QR')
-    //           }]
-    //         }]);
-    //       } else {
-    //         // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-    //         window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-    //           guid: window.Asc.plugin.guid,
-    //           items: []
-    //         }]);
-    //       }
-    //     });
-    //   } else {
-    //     // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-    //     window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-    //       guid: window.Asc.plugin.guid,
-    //       items: []
-    //     }]);
-    //   }
-    // };
+          }
+        });
+      } else {
+        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+          guid: window.Asc.plugin.guid,
+          items: []
+        }]);
+      }
+    };
 
   // Function to generate text
   function generateText(text) {
