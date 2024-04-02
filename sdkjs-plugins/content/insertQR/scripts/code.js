@@ -38,7 +38,7 @@
     console.log("GenerateQR clicked");
     displayFunction(displaySettings);
   });
-  //  Display context menu if the text is selected
+  // //  Display context menu if the text is selected
   // window.Asc.plugin.event_onContextMenuShow = function (options) {
 
   //   if (options.type === "Selection") { // Check if the text is selected
@@ -124,11 +124,13 @@
           ParaSeparator: "\n",
           TabSymbol: String.fromCharCode(9),
         }], function (data) {
-          if (typeof data === 'string') {
-            selectedText = data.trim();
-            console.log("the selected text is" + selectedText);  
+         const selection =  data.trim()
+          if (selection === "○" || selection === "☐") { // exclude radio buttons and check boxes from the selection
+            selectedText = "";
+            console.log("the selected text has been reset to an empty string");  
           } else {
-            console.log("the data is not a string")
+            selectedText = selection;
+            console.log(selectedText)
           }
          
           if (selectedText !== "") {
@@ -199,7 +201,18 @@
       recalculate: true
     };
 
-    window.Asc.plugin.executeMethod("AddOleObject", [oImageData]);
+  //window.Asc.plugin.executeMethod("AddOleObject", [oImageData]);
+  window.Asc.plugin.executeMethod ("InsertOleObject", [
+    {
+      "Data": qrImageURI,
+      "ImageData": qrImageURI,
+      "ApplicationId": _info.objectId,
+      "Width": qrWidth / _info.mmToPx,
+      "Height":qrHeight / _info.mmToPx,
+      "WidthPix": qrWidth,
+      "HeightPix":qrHeight
+    },
+    true]);
   }
 
   // Function to display message in modal window
