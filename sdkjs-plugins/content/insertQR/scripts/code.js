@@ -169,6 +169,7 @@
       }]);
     }
   };
+  //commented this bit out
 //   window.Asc.plugin.event_onContextMenuShow = function (options) {
 //     if (options.type === "Selection") { // Check if the text is selected
 //         // Execute method to get selected text
