@@ -30,145 +30,148 @@
 
   //  Display context menu if the text is selected
   window.Asc.plugin.event_onContextMenuShow = function (options) {
-
     if (options.type === "Selection") { // Check if the text is selected
-      // Execute method to get selected text
-      window.Asc.plugin.executeMethod("GetSelectedText", [{
-        Numbering: true,
-        Math: false,
-        TableCellSeparator: "\n",
-        ParaSeparator: "\n",
-        TabSymbol: String.fromCharCode(9),
-      }], function (data) {
-        const selection = data.trim().replace(/\n/g, '');
-        const editorType = window.Asc.plugin.info.editorType // retrieve the editor type
-        switch (editorType) {
+        // Execute method to get selected text
+        window.Asc.plugin.executeMethod("GetSelectedText", [{
+            Numbering: true,
+            Math: false,
+            TableCellSeparator: "\n",
+            ParaSeparator: "\n",
+            TabSymbol: String.fromCharCode(9),
+        }], function (data) {
+            const selection = data.trim().replace(/\n/g, '');
+            const editorType = window.Asc.plugin.info.editorType // retrieve the editor type
+            switch (editorType) {
+                case "word":
+                    if (selection === "○" || selection === "☐" || (selection.includes("○") && selection.includes("☐"))) { // exclude radio buttons and check boxes from the selection
+                        textQR = "";
+                        console.log("the selected text has been reset to an empty string");
+                    } else {
+                        textQR = selection;
+                        console.log(textQR)
+                    }
 
-          case "word":
-            if (selection === "○" || selection === "☐" || (selection.includes("○") && selection.includes("☐"))) { // exclude radio buttons and check boxes from the selection
-              textQR = "";
-              console.log("the selected text has been reset to an empty string");
-            } else {
-              textQR = selection;
-              console.log(textQR)
+                    if (textQR !== "") {
+                        // If text is selected and it is not an empty string, add the context menu item for generating QR code
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: [{
+                                id: 'GenerateQR',
+                                text: generateText('Insert QR')
+                            }]
+                        }]);
+                    } else {
+                        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: []
+                        }]);
+                    }
+                    break;
+
+                case "slide":
+                    if (selection !== "") {
+                        // If text is selected and it is not an empty string, add the context menu item for generating QR code
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: [{
+                                id: 'GenerateQR',
+                                text: generateText('Insert QR')
+                            }]
+                        }]);
+                        textQR = selection;
+                    } else {
+                        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: []
+                        }]);
+                    }
+                    break;
+
+                case "cell":
+                    // Filter out capital letters from the selection
+                    const hasCapitals = selection.split('').filter(char => char === char.toUpperCase() && isNaN(char));
+                    let haslink = false;
+
+                    // Check if the selection contains only digits
+                    const hasdigits = /^\d+$/.test(selection);
+
+                    // Check if the selection contains 'http' or 'https'
+                    if (selection.includes('http') || selection.includes('https')) {
+                        haslink = true;
+                    }
+
+                    // Exclude formulas from the selection and set context menu item
+                    if ((hasCapitals.length !== 0 && !haslink) || (hasCapitals.length !== 0 && !haslink && !hasdigits)) {
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: [{
+                                id: 'GenerateQR_info',
+                                text: generateText('Insert QR: info')
+                            }]
+                        }]);
+                    }
+
+                    // Allow generating QR code from single lowercase phrases or digits
+                    if (haslink || hasCapitals.length === 0 || hasdigits) {
+                        textQR = selection;
+
+                        if (textQR !== "") {
+                            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                                guid: window.Asc.plugin.guid,
+                                items: [{
+                                    id: 'GenerateQR',
+                                    text: generateText('Insert QR')
+                                }]
+                            }]);
+                        } else {
+                            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                                guid: window.Asc.plugin.guid,
+                                items: []
+                            }]);
+                        }
+                    } else {
+                        // If none of the conditions are met, add empty items array
+                        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                            guid: window.Asc.plugin.guid,
+                            items: []
+                        }]);
+                    }
+                    break;
+
+                default:
+                    break;
             }
+        });
 
-            if (textQR !== "") {
-              // If text is selected and it is not an empty string, add the context menu item for generating QR code
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: [{
-                  id: 'GenerateQR',
-                  text: generateText('Insert QR')
-                }]
-              }]);
-            } else {
-              // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: []
-              }]);
-            }
-            break;
-
-          case "slide":
-            if (selection !== "") {
-              // If text is selected and it is not an empty string, add the context menu item for generating QR code
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: [{
-                  id: 'GenerateQR',
-                  text: generateText('Insert QR')
-                }]
-              }]);
-              textQR = selection;
-            } else {
-              // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: []
-              }]);
-            }
-            break;
-
-          case "cell":
-            // Filter out capital letters from the selection
-            const hasCapitals = selection.split('').filter(char => char === char.toUpperCase() && isNaN(char));
-            let haslink = false;
-
-            // Check if the selection contains only digits
-            const hasdigits = /^\d+$/.test(selection);
-
-            // Check if the selection contains 'http' or 'https'
-            if (selection.includes('http') || selection.includes('https')) {
-              haslink = true;
-            }
-
-            // Exclude formulas from the selection and set context menu item
-            if ((hasCapitals.length !== 0 && !haslink) || (hasCapitals.length !== 0 && !haslink && !hasdigits)) {
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: [{
-                  id: 'GenerateQR_info',
-                  text: generateText('Insert QR: info')
-                }]
-              }]);
-            }
-
-            // Allow generating QR code from single lowercase phrases or digits
-            if (haslink || hasCapitals.length === 0 || hasdigits) {
-              textQR = selection;
-
-              if (textQR !== "") {
+        // Execute method to get selected OLE objects
+        window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
+            // If OLE objects are selected, add the context menu item for modifying the QR code
+            if (data && data.length > 0) {
                 window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                  guid: window.Asc.plugin.guid,
-                  items: [{
-                    id: 'GenerateQR',
-                    text: generateText('Insert QR')
-                  }]
+                    guid: window.Asc.plugin.guid,
+                    items: [{
+                        id: 'ModifyQR',
+                        text: generateText('Modify QR')
+                    }]
                 }]);
-              } else {
-                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                  guid: window.Asc.plugin.guid,
-                  items: []
-                }]);
-              }
-            } else {
-              // If none of the conditions are met, add empty items array
-              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                guid: window.Asc.plugin.guid,
-                items: []
-              }]);
             }
+        });
 
-            function generateText(text) {
-              return text;
-            }
-            break;
-          default:
-            break
-        }
-
-      });
-      
-      window.Asc.plugin.executeMethod("GetSelectedOleObjects", function() {
-        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-          guid: window.Asc.plugin.guid,
-          items: [{
-            id: 'GenerateQR',
-            text: generateText('Insert QR')
-          }]
-        }]);
-
-      });
     } else {
-      // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-      window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-        guid: window.Asc.plugin.guid,
-        items: []
-      }]);
+        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+            guid: window.Asc.plugin.guid,
+            items: []
+        }]);
     }
-  };
+
+    function generateText(text) {
+        return text;
+    }
+};
+
   //commented this bit out
 //   window.Asc.plugin.event_onContextMenuShow = function (options) {
 //     if (options.type === "Selection") { // Check if the text is selected
