@@ -172,6 +172,7 @@
   window.Asc.plugin.event_onContextMenuShow = function (options) {
     if (options.type === "Selection") { // Check if the text is selected
         // Execute method to get selected text
+        console.log("QR selected")
         window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
             window.Asc.plugin.executeMethod("AddContextMenuItem", [{
                 guid: window.Asc.plugin.guid,
