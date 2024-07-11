@@ -150,6 +150,7 @@
         }
 
       });
+      
       window.Asc.plugin.executeMethod("GetSelectedOleObjects", function() {
         window.Asc.plugin.executeMethod("AddContextMenuItem", [{
           guid: window.Asc.plugin.guid,
@@ -168,6 +169,27 @@
       }]);
     }
   };
+  window.Asc.plugin.event_onContextMenuShow = function (options) {
+    if (options.type === "Selection") { // Check if the text is selected
+        // Execute method to get selected text
+        window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
+            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: [{
+                    id: 'GenerateQR',
+                    text: generateText('Insert QR')
+                }]
+            }]);
+        });
+    } else {
+        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+        window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+            guid: window.Asc.plugin.guid,
+            items: []
+        }]);
+    }
+};
+
 
   // Function to generate text
   function generateText(text) {
