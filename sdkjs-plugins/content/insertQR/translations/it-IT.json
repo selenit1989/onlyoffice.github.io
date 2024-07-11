@@ -1,5 +1,5 @@
 {
-"Settings": "Impostazioni",
+"QR Settings": "Impostazioni QR",
 "Set QR Color": "Imposta il colore del QR",
 "Set Background Color": "Imposta il colore di sfondo",
 "Width": "Larghezza",
@@ -9,5 +9,7 @@
 "Warning": "Avviso",
 "Insert QR": "Inserisci il codice QR",
 "The plugin is not supported in the Internet Explorer": "Il plugin non è supportato in Internet Explorer.",
-"The selected text is too long": "Il testo selezionato è troppo lungo"
+"The selected text сannot be used": "Il testo selezionato non può essere utilizzato",
+"The colors must be different": "I colori devono essere diversi",
+"Insert QR: info": "Inserire QR: info"
 }

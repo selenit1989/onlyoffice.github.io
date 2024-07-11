@@ -1,5 +1,5 @@
 {
-"Settings": "Настройки",
+"QR Settings": "Настройки QR",
 "Set QR Color": "Цвет QR",
 "Set Background Color": "Цвет фона",
 "Width": "Ширина",
@@ -8,6 +8,8 @@
 "Maximum QR size is 2000px": "Максимальный размер QR-кода составляет 2000 пикселей",
 "Warning": "Предупреждение",
 "Insert QR": "Вставить QR",
-"The selected text is too long": "Выбранный текст слишком длинный.",
-"The plugin is not supported in the Internet Explorer": "Плагин не поддерживается в Internet Explorer"
+"The selected text сannot be used": "Выбранный текст нельзя использовать",
+"The plugin is not supported in the Internet Explorer": "Плагин не поддерживается в Internet Explorer",
+"The colors must be different": "Цвета должны быть разными",
+"Insert QR: info": "Вставить QR: информация"
 }

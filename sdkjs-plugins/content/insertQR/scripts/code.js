@@ -1,25 +1,7 @@
-/**
- *
- * (c) Copyright Ascensio System SIA 2020
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 (function (window, undefined) {
 
   // Initialize global variables
-  let selectedText = ""; // Initialize selected text variable
+  let textQR = ""; // Initialize selected text variable
   let modalWindow; // Declare modalWindow at the top level
   // Define global variables to store QR parameters
   let qrText;
@@ -28,8 +10,10 @@
   let qrColor;
   let bgColor;
   let qr;
+  // Define flags to display modal windows
   let displaySettings = 'displaySettings';
-  let exceedsMaxLength = 'exceedsMaxLength';
+  let textWarning = 'textWarning';
+
 
   window.Asc.plugin.init = function () { };
 
@@ -38,126 +22,152 @@
     console.log("GenerateQR clicked");
     displayFunction(displaySettings);
   });
-  // //  Display context menu if the text is selected
-  // window.Asc.plugin.event_onContextMenuShow = function (options) {
 
-  //   if (options.type === "Selection") { // Check if the text is selected
-  //     console.log(options)
+  window.Asc.plugin.attachContextMenuClickEvent('GenerateQR_info', function () {
+    console.log("GenerateQR clicked");
+    displayFunction(textWarning);
+  });
 
-  //     window.Asc.plugin.executeMethod("GetSelectionType", [], function (sType) {
-  //       console.log(sType)
-  //       switch (sType) {
+  //  Display context menu if the text is selected
+  window.Asc.plugin.event_onContextMenuShow = function (options) {
 
-  //         case "none":
-  //           console.log("swith none")
-  //           // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-  //           window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-  //             guid: window.Asc.plugin.guid,
-  //             items: []
-  //           }]);
-  //           break;
+    if (options.type === "Selection") { // Check if the text is selected
+      // Execute method to get selected text
+      window.Asc.plugin.executeMethod("GetSelectedText", [{
+        Numbering: true,
+        Math: false,
+        TableCellSeparator: "\n",
+        ParaSeparator: "\n",
+        TabSymbol: String.fromCharCode(9),
+      }], function (data) {
+        const selection = data.trim().replace(/\n/g, '');
+        const editorType = window.Asc.plugin.info.editorType // retrieve the editor type
+        switch (editorType) {
 
-  //         case "text":
-  //           console.log("swith text")
-  //           // Execute method to get selected text
-  //           window.Asc.plugin.executeMethod("GetSelectedText", [{
-  //             Numbering: false,
-  //             Math: false,
-  //             TableCellSeparator: "\n",
-  //             ParaSeparator: "\n",
-  //             TabSymbol: String.fromCharCode(9),
-  //           }], function (data) {
-  //             if (typeof data === 'string') {
-  //               selectedText = data.trim();
-  //             console.log("the selected text is" + selectedText);
-  //             } else {
-  //               console.log("the data is not a string")
+          case "word":
+            if (selection === "○" || selection === "☐" || (selection.includes("○") && selection.includes("☐"))) { // exclude radio buttons and check boxes from the selection
+              textQR = "";
+              console.log("the selected text has been reset to an empty string");
+            } else {
+              textQR = selection;
+              console.log(textQR)
+            }
 
-  //             }
-              
+            if (textQR !== "") {
+              // If text is selected and it is not an empty string, add the context menu item for generating QR code
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: [{
+                  id: 'GenerateQR',
+                  text: generateText('Insert QR')
+                }]
+              }]);
+            } else {
+              // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: []
+              }]);
+            }
+            break;
 
-  //             if (selectedText !== "") {
-  //               // If text is selected and it is not an empty string, add the context menu item for generating QR code
-  //               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-  //                 guid: window.Asc.plugin.guid,
-  //                 items: [{
-  //                   id: 'GenerateQR',
-  //                   text: generateText('Insert QR')
-  //                 }]
-  //               }]);
-  //             } else {
-  //               console.log(" no swith 1st else")
-  //               // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-  //               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-  //                 guid: window.Asc.plugin.guid,
-  //                 items: []
-  //               }]);
-  //             }
-  //           });
-  //           break;
-  //       }
-  //     });
+          case "slide":
+            if (selection !== "") {
+              // If text is selected and it is not an empty string, add the context menu item for generating QR code
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: [{
+                  id: 'GenerateQR',
+                  text: generateText('Insert QR')
+                }]
+              }]);
+              textQR = selection;
+            } else {
+              // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: []
+              }]);
+            }
+            break;
 
-  //   } else {
-  //     console.log("no swith 2nd else")
-  //     // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-  //     window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-  //       guid: window.Asc.plugin.guid,
-  //       items: []
-  //     }]);
-  //   }
-  // };
+          case "cell":
+            // Filter out capital letters from the selection
+            const hasCapitals = selection.split('').filter(char => char === char.toUpperCase() && isNaN(char));
+            let haslink = false;
 
-    //  Display context menu if the text is selected
-    window.Asc.plugin.event_onContextMenuShow = function (options) {
+            // Check if the selection contains only digits
+            const hasdigits = /^\d+$/.test(selection);
 
-      if (options.type === "Selection") { // Check if the text is selected
-        // Execute method to get selected text
-        window.Asc.plugin.executeMethod ("GetSelectionType", [], function(sType) {
-          console.log(sType)
+            // Check if the selection contains 'http' or 'https'
+            if (selection.includes('http') || selection.includes('https')) {
+              haslink = true;
+            }
+
+            // Exclude formulas from the selection and set context menu item
+            if ((hasCapitals.length !== 0 && !haslink) || (hasCapitals.length !== 0 && !haslink && !hasdigits)) {
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: [{
+                  id: 'GenerateQR_info',
+                  text: generateText('Insert QR: info')
+                }]
+              }]);
+            }
+
+            // Allow generating QR code from single lowercase phrases or digits
+            if (haslink || hasCapitals.length === 0 || hasdigits) {
+              textQR = selection;
+
+              if (textQR !== "") {
+                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                  guid: window.Asc.plugin.guid,
+                  items: [{
+                    id: 'GenerateQR',
+                    text: generateText('Insert QR')
+                  }]
+                }]);
+              } else {
+                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                  guid: window.Asc.plugin.guid,
+                  items: []
+                }]);
+              }
+            } else {
+              // If none of the conditions are met, add empty items array
+              window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                guid: window.Asc.plugin.guid,
+                items: []
+              }]);
+            }
+
+            function generateText(text) {
+              return text;
+            }
+            break;
+          default:
+            break
+        }
+
       });
-
-        window.Asc.plugin.executeMethod("GetSelectedText", [{
-          Numbering: false,
-          Math: false,
-          TableCellSeparator: "\n",
-          ParaSeparator: "\n",
-          TabSymbol: String.fromCharCode(9),
-        }], function (data) {
-         const selection =  data.trim()
-          if (selection === "○" || selection === "☐") { // exclude radio buttons and check boxes from the selection
-            selectedText = "";
-            console.log("the selected text has been reset to an empty string");  
-          } else {
-            selectedText = selection;
-            console.log(selectedText)
-          }
-         
-          if (selectedText !== "") {
-            // If text is selected and it is not an empty string, add the context menu item for generating QR code
-            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-              guid: window.Asc.plugin.guid,
-              items: [{
-                id: 'GenerateQR',
-                text: generateText('Insert QR')
-              }]
-            }]);
-          } else {
-            // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-            window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-              guid: window.Asc.plugin.guid,
-              items: []
-            }]);
-          }
-        });
-      } else {
-        // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+      window.Asc.plugin.executeMethod("GetSelectedOleObjects", function() {
         window.Asc.plugin.executeMethod("AddContextMenuItem", [{
           guid: window.Asc.plugin.guid,
-          items: []
+          items: [{
+            id: 'GenerateQR',
+            text: generateText('Insert QR')
+          }]
         }]);
-      }
-    };
+
+      });
+    } else {
+      // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
+      window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+        guid: window.Asc.plugin.guid,
+        items: []
+      }]);
+    }
+  };
 
   // Function to generate text
   function generateText(text) {
@@ -166,54 +176,126 @@
   }
 
   // Function to insert QR code
+  // png image:
   function insertQR(qrText, qrWidth, qrHeight, qrColor, bgColor) {
+    console.log("insertQR called with qrWidth:", qrWidth);
+
     try {
-      qr = new QRCode(document.createElement('div'), {
-        text: qrText,
-        width: qrWidth,
-        height: qrHeight,
-        colorDark: qrColor,
-        colorLight: bgColor,
-        correctLevel: QRCode.CorrectLevel.H
-      });
-    } catch (error) {
-      if (error.message.includes("reading '3'")) {
-        displayFunction(exceedsMaxLength);
+      const qrCode = qrcodegen.QrCode.encodeText(qrText, qrcodegen.QrCode.Ecc.LOW);
+      const size = qrCode.size;
+      const scale = qrWidth / size || 1; // Graceful fallback to avoid zero divisions or NaN
+      console.log("QR code width:", qrWidth, "Scale:", scale);
+
+      // Set adequate canvas dimensions
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = size * scale;
+      canvas.height = size * scale;
+
+      // Verify canvas setup
+      console.log("Canvas initialized with dimensions: ", canvas.width, canvas.height);
+
+      // Fill background
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      console.log("Canvas background filled");
+
+      // Draw QR code modules
+      ctx.fillStyle = qrColor;
+      console.log("QR code size:", size, "Scale:", scale);
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          if (qrCode.getModule(x, y)) {
+            ctx.fillRect(x * scale, y * scale, scale, scale);
+            //console.log(`Drawing module at (${x * scale}, ${y * scale})`);
+          }
+        }
       }
+
+      const qrImageURI = canvas.toDataURL("image/png");
+      console.log("Generated Image URI:", qrImageURI);
+
+      if (qrImageURI === "data:,") throw new Error("Canvas didn't draw correctly, check SVG conversion.");
+
+      const _info = window.Asc.plugin.info;
+      const oImageData = {
+        guid: _info.guid,
+        widthPix: qrWidth,
+        heightPix: qrHeight,
+        width: qrWidth / _info.mmToPx,
+        height: qrHeight / _info.mmToPx,
+        imgSrc: qrImageURI,
+        objectId: _info.objectId,
+        data: qrImageURI,
+        resize: true,
+        recalculate: true
+      };
+
+      window.Asc.plugin.executeMethod("AddOleObject", [oImageData]);
+
+    } catch (error) {
+      console.error("QR code generation failed:", error);
     }
-    // Get the canvas element from QRCode library
-    const canvas = qr._el.querySelector('canvas');
-    // Get the data URL of the canvas
-    const qrImageURI = canvas.toDataURL("image/png")
-    const _info = window.Asc.plugin.info
-
-    // Prepare image data object
-    let oImageData = {
-      guid: _info.guid,
-      widthPix: qrWidth,
-      heightPix: qrHeight,
-      width: qrWidth / _info.mmToPx,
-      height: qrHeight / _info.mmToPx,
-      imgSrc: qrImageURI,
-      objectId: _info.objectId,
-      data: qrImageURI,
-      resize: true,
-      recalculate: true
-    };
-
-  //window.Asc.plugin.executeMethod("AddOleObject", [oImageData]);
-  window.Asc.plugin.executeMethod ("InsertOleObject", [
-    {
-      "Data": qrImageURI,
-      "ImageData": qrImageURI,
-      "ApplicationId": _info.objectId,
-      "Width": qrWidth / _info.mmToPx,
-      "Height":qrHeight / _info.mmToPx,
-      "WidthPix": qrWidth,
-      "HeightPix":qrHeight
-    },
-    true]);
   }
+  // svg image:
+  // function insertQR(qrText, qrWidth, qrHeight, qrColor, bgColor) {
+  //   console.log("insertQR called with qrWidth:", qrWidth);
+  
+  //   try {
+  //     const qrCode = qrcodegen.QrCode.encodeText(qrText, qrcodegen.QrCode.Ecc.LOW);
+  //     const size = qrCode.size;
+  //     const scale = qrWidth / size || 1; // Graceful fallback to avoid zero divisions or NaN
+  //     console.log("QR code width:", qrWidth, "Scale:", scale);
+  
+  //     // Create SVG element
+  //     const svgNS = "http://www.w3.org/2000/svg";
+  //     const svg = document.createElementNS(svgNS, "svg");
+  //     svg.setAttribute("width", qrWidth);
+  //     svg.setAttribute("height", qrHeight);
+  //     svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+  //     svg.style.backgroundColor = bgColor;
+  
+  //     // Draw QR code modules
+  //     console.log("QR code size:", size, "Scale:", scale);
+  //     for (let y = 0; y < size; y++) {
+  //       for (let x = 0; x < size; x++) {
+  //         if (qrCode.getModule(x, y)) {
+  //           const rect = document.createElementNS(svgNS, "rect");
+  //           rect.setAttribute("x", x);
+  //           rect.setAttribute("y", y);
+  //           rect.setAttribute("width", 1);
+  //           rect.setAttribute("height", 1);
+  //           rect.setAttribute("fill", qrColor);
+  //           svg.appendChild(rect);
+  //         }
+  //       }
+  //     }
+  
+  //     const serializer = new XMLSerializer();
+  //     const svgString = serializer.serializeToString(svg);
+  //     const svgURI = "data:image/svg+xml;base64," + btoa(svgString);
+  //     console.log("Generated SVG URI:", svgURI);
+  
+  //     const _info = window.Asc.plugin.info;
+  //     const oImageData = {
+  //       guid: _info.guid,
+  //       widthPix: qrWidth,
+  //       heightPix: qrHeight,
+  //       width: qrWidth / _info.mmToPx,
+  //       height: qrHeight / _info.mmToPx,
+  //       imgSrc: svgURI,
+  //       objectId: _info.objectId,
+  //       data: svgURI,
+  //       resize: true,
+  //       recalculate: true
+  //     };
+  
+  //     window.Asc.plugin.executeMethod("AddOleObject", [oImageData]);
+  
+  //   } catch (error) {
+  //     console.error("QR code generation failed:", error);
+  //   }
+  // }
 
   // Function to display message in modal window
   function displayFunction(option) {
@@ -226,17 +308,17 @@
       case 'displaySettings':
         variation = {
           url: location.href.replace(file, 'settingsQR.html'),
-          description: generateText('Settings'),
+          description: generateText('QR Settings'),
           isVisual: true,
           isModal: true,
           buttons: [],
           EditorsSupport: ['slide', 'word', 'cell'],
-          size: [400, 500]
+          size: [400, 550]
         };
         break;
-      case 'exceedsMaxLength':
+      case 'textWarning':
         variation = {
-          url: location.href.replace(file, 'textLength_warning.html'),
+          url: location.href.replace(file, 'text_warning.html'),
           description: generateText('Warning'),
           isVisual: true,
           isModal: true,
@@ -255,11 +337,15 @@
 
     // Get the QR parameters from the message
     modalWindow.attachEvent("onWindowMessage", function (message) {
-      qrText = selectedText;
+      console.log("Received message:", message);
+
+      qrText = textQR;
       qrWidth = message.qrWidth;
       qrHeight = message.qrHeight;
       qrColor = message.qrColor;
       bgColor = message.bgColor;
+
+      console.log("Parameters received: ", { qrText, qrWidth, qrHeight, qrColor, bgColor });
 
       // Insert QR code
       insertQR(qrText, qrWidth, qrHeight, qrColor, bgColor);

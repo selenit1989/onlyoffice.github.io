@@ -32,10 +32,13 @@
   const errSpan = document.getElementById('error-msg');
   let spanMssgMinErr = "";
   let spanMssgMaxErr = "";
+  let spanMssgSameClr = "";
   // Define a global variable to store QR parameters
   let storedSettings = {};
 
-  // Plugin initialization function
+  // Call the handleResize function initially to set the initial state
+  handleResize();
+
   window.Asc.plugin.init = function () { };
 
   // Translation function for plugin
@@ -47,6 +50,7 @@
     qrHeight.innerText = window.Asc.plugin.tr('Height');
     spanMssgMinErr = window.Asc.plugin.tr('Minimum QR size is 50px');
     spanMssgMaxErr = window.Asc.plugin.tr('Maximum QR size is 2000px');
+    spanMssgSameClr = window.Asc.plugin.tr('The colors must be different');
   };
 
   // Function to send message to plugin
@@ -65,7 +69,7 @@
     });
 
     // Attach the 'changeColor' event handler during color picker initialization
-    colorpicker.on('changeColor', function (e) {
+    colorpicker.on('colorpickerChange', function (e) {
       if (selectedInput === 'qrColor' || selectedInput === 'bgColor') {
         // Check if e.color is an object, if so, extract the color value
         const colorValue = typeof e.color === 'object' ? e.color.toString() : e.color;
@@ -85,6 +89,8 @@
 
   // Initialize color picker
   let colorpicker = initializeColorPicker();
+  colorpicker.colorpicker('disable') // Disable the colorpicker to prevent unexpected behavior
+
 
 
   // Retrieve values from localStorage and set default values
@@ -112,6 +118,9 @@
 
   // Set the initial color picker values
   colorpicker.colorpicker('setValue', storedSettings.qrColor || $('#qrColor').val());
+
+  // Add event listener for window resize event
+  window.addEventListener('resize', handleResize);
 
   // Event listener to prevent form submission on Enter key press in  the QR width field
   qrWidthField.addEventListener('keydown', function (event) {
@@ -168,6 +177,7 @@
         event.preventDefault();
         qrColorElement.style.borderColor = 'red';
         bgColorElement.style.borderColor = 'red';
+        errSpan.innerText = spanMssgSameClr;
         return;
 
       case parseInt(qrWidthValue, 10) < 50:
@@ -230,6 +240,7 @@
   $('#activateQR').change(function () {
     $('#bgColor').prop('disabled', true);
     $('#qrColor').prop('disabled', false);
+    colorpicker.colorpicker('enable')
     selectedInput = 'qrColor';
     // Reinitialize color picker
     colorpicker = initializeColorPicker();
@@ -237,11 +248,11 @@
     colorpicker.colorpicker('setValue', $('#qrColor').val());
   });
 
-
   // Event listener for changing background color activation
   $('#activateBG').change(function () {
     $('#qrColor').prop('disabled', true);
     $('#bgColor').prop('disabled', false);
+    colorpicker.colorpicker('enable')
     selectedInput = 'bgColor';
     // Reinitialize color picker
     colorpicker = initializeColorPicker();
@@ -284,5 +295,40 @@
     // Attach event listener for input events
     $(this).on('input', delayedValidation);
   });
+
+  $('#qrColorContainer').on('mouseleave', function () {
+    // Your code to trigger when the mouse leaves $('#qrColorContainer') goes here
+    // For example:
+    console.log("Mouse left the #qrColorContainer");
+    colorpicker.colorpicker('disable')
+    // Or you can call a specific function:
+    // yourFunction();
+  });
+
+  // Enable the colorpicker when the #qrColorContainer' is clciked
+  $('#qrColorContainer').on('click', function () {
+    colorpicker.colorpicker('enable')
+  });
+
+  // Enable the colorpicker when the '#qrColor, #bgColor' are clciked
+  $('#qrColor, #bgColor').on('click', function () {
+    colorpicker.colorpicker('enable')
+
+  });
+
+
+  // Function to handle window resize event
+  function handleResize() {
+    const windowHeight = window.innerHeight;
+    const bodyHeight = document.body.offsetHeight;
+
+    // Check if body height exceeds window height
+    if (bodyHeight > windowHeight) {
+      document.body.style.overflowY = 'scroll'; // Add vertical scroll
+    } else {
+      document.body.style.overflowY = 'auto'; // Remove vertical scroll
+    }
+  }
+
 
 })(window, undefined);
