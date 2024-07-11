@@ -147,6 +147,8 @@
 
         // Execute method to get selected OLE objects
         window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
+          //log the data
+          console.log(data)
             // If OLE objects are selected, add the context menu item for modifying the QR code
             if (data && data.length > 0) {
                 window.Asc.plugin.executeMethod("AddContextMenuItem", [{
