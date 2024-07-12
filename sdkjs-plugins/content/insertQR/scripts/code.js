@@ -146,8 +146,7 @@
         });
 
         // Execute method to get selected OLE objects
-      var oleObjects =  window.Asc.plugin.executeMethod("GetSelectedOleObjects")
-      console.log(oleObjects);
+    
           //log the data
           // console.log(data)
             // If OLE objects are selected, add the context menu item for modifying the QR code
@@ -170,7 +169,10 @@
             items: []
         }]);
     }
-
+    if (options.type === "Selection") {
+      var oleObjects =  window.Asc.plugin.executeMethod("GetSelectedOleObjects")
+      console.log(oleObjects);
+    }
     function generateText(text) {
         return text;
     }
