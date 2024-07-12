@@ -1,5 +1,4 @@
 (function (window, undefined) {
-
   // Initialize global variables
   let textQR = ""; // Initialize selected text variable
   let modalWindow; // Declare modalWindow at the top level
@@ -14,7 +13,9 @@
   let displaySettings = 'displaySettings';
   let textWarning = 'textWarning';
 
-  window.Asc.plugin.init = function () { };
+  window.Asc.plugin.init = function () {
+    console.log("Plugin init");
+  };
 
   // Attach event for context menu click on GenerateQR
   window.Asc.plugin.attachContextMenuClickEvent('GenerateQR', function () {
@@ -29,7 +30,9 @@
 
   //  Display context menu if the text is selected
   window.Asc.plugin.event_onContextMenuShow = function (options) {
+    console.log("event_onContextMenuShow called");
     if (options.type === "Selection") { // Check if the text is selected
+      console.log("Selection detected");
       // Execute method to get selected text
       window.Asc.plugin.executeMethod("GetSelectedText", [{
         Numbering: true,
@@ -40,6 +43,7 @@
       }], function (data) {
         const selection = data.trim().replace(/\n/g, '');
         const editorType = window.Asc.plugin.info.editorType // retrieve the editor type
+        console.log("Selected text: ", selection);
         switch (editorType) {
           case "word":
             if (selection === "○" || selection === "☐" || (selection.includes("○") && selection.includes("☐"))) { // exclude radio buttons and check boxes from the selection
@@ -47,7 +51,7 @@
               console.log("the selected text has been reset to an empty string");
             } else {
               textQR = selection;
-              console.log(textQR)
+              console.log("TextQR: ", textQR);
             }
 
             if (textQR !== "") {
@@ -59,12 +63,14 @@
                   text: generateText('Insert QR')
                 }]
               }]);
+              console.log("ContextMenuItem added for word");
             } else {
               // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
                 guid: window.Asc.plugin.guid,
                 items: []
               }]);
+              console.log("Empty ContextMenuItem added for word");
             }
             break;
 
@@ -79,12 +85,15 @@
                 }]
               }]);
               textQR = selection;
+              console.log("TextQR: ", textQR);
+              console.log("ContextMenuItem added for slide");
             } else {
               // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
               window.Asc.plugin.executeMethod("AddContextMenuItem", [{
                 guid: window.Asc.plugin.guid,
                 items: []
               }]);
+              console.log("Empty ContextMenuItem added for slide");
             }
             break;
 
@@ -110,11 +119,13 @@
                   text: generateText('Insert QR: info')
                 }]
               }]);
+              console.log("ContextMenuItem added for cell with info");
             }
 
             // Allow generating QR code from single lowercase phrases or digits
             if (haslink || hasCapitals.length === 0 || hasdigits) {
               textQR = selection;
+              console.log("TextQR: ", textQR);
 
               if (textQR !== "") {
                 window.Asc.plugin.executeMethod("AddContextMenuItem", [{
@@ -124,11 +135,13 @@
                     text: generateText('Insert QR')
                   }]
                 }]);
+                console.log("ContextMenuItem added for cell");
               } else {
                 window.Asc.plugin.executeMethod("AddContextMenuItem", [{
                   guid: window.Asc.plugin.guid,
                   items: []
                 }]);
+                console.log("Empty ContextMenuItem added for cell");
               }
             } else {
               // If none of the conditions are met, add empty items array
@@ -136,10 +149,12 @@
                 guid: window.Asc.plugin.guid,
                 items: []
               }]);
+              console.log("Empty ContextMenuItem added for cell");
             }
             break;
 
           default:
+            console.log("Editor type not recognized");
             break;
         }
       });
@@ -150,11 +165,12 @@
         guid: window.Asc.plugin.guid,
         items: []
       }]);
+      console.log("Empty ContextMenuItem added for non-selection");
     }
-   // if (options.type === "Selection") {
+    if (options.type === "Selection") {
       var oleObjects = window.Asc.plugin.executeMethod("GetSelectedOleObjects")
       console.log("ole object is" + oleObjects);
-   // }
+    }
   };
 
   // Function to generate text
@@ -230,28 +246,22 @@
     let location = window.location;
     let start = location.pathname.lastIndexOf('/') + 1;
     let file = location.pathname.substring(start);
-    let variation = {};
+    console.log("Displaying function for:", file);
 
+    // Determine window size and display settings based on type
+    let variation = {};
     switch (option) {
-      case 'displaySettings':
-        variation = {
-          url: location.href.replace(file, 'settingsQR.html'),
-          description: generateText('QR Settings'),
-          isVisual: true,
-          isModal: true,
-          buttons: [],
-          EditorsSupport: ['slide', 'word', 'cell'],
-          size: [400, 550]
-        };
-        break;
       case 'textWarning':
         variation = {
-          url: location.href.replace(file, 'text_warning.html'),
-          description: generateText('Warning'),
-          isVisual: true,
-          isModal: true,
-          buttons: [],
-          EditorsSupport: ['slide', 'word', 'cell'],
+          header: 'Warning!',
+          size: [400, 200]
+        };
+        break;
+      case 'displaySettings':
+        variation = {
+          header: 'QR Settings',
+          data: ['qrSize', 'width', 'color', 'backgroundColor'],
+          type: ['range', 'range', 'word', 'cell'],
           size: [400, 200]
         };
         break;
