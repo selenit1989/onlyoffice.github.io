@@ -149,14 +149,14 @@
         }
       });
 
-    } else if (options.type === "OleObject") { // Check if an OLE object is selected
-      window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-        guid: window.Asc.plugin.guid,
-        items: [{
-          id: 'OLEQR_info',
-          text: generateText('OLE QR: info')
-        }]
-      }]);
+    // } else if (options.type === "OleObject") { // Check if an OLE object is selected
+    //   window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+    //     guid: window.Asc.plugin.guid,
+    //     items: [{
+    //       id: 'OLEQR_info',
+    //       text: generateText('OLE QR: info')
+    //     }]
+    //   }]);
     } else {
       // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
       window.Asc.plugin.executeMethod("AddContextMenuItem", [{
