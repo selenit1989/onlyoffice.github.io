@@ -146,7 +146,8 @@
         });
 
         // Execute method to get selected OLE objects
-        window.Asc.plugin.executeMethod("GetSelectedOleObjects", function () {
+      var oleObjects =  window.Asc.plugin.executeMethod("GetSelectedOleObjects")
+      console.log(oleObjects);
           //log the data
           // console.log(data)
             // If OLE objects are selected, add the context menu item for modifying the QR code
@@ -160,7 +161,7 @@
                 //     }]
                 // }]);
            // }
-         });
+        //  });
 
     } else {
         // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
