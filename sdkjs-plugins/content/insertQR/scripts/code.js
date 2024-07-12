@@ -146,11 +146,12 @@
         });
 
         // Execute method to get selected OLE objects
-        window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
+        window.Asc.plugin.executeMethod("GetSelectedOleObjects",[], function (data) {
           //log the data
           console.log(data)
             // If OLE objects are selected, add the context menu item for modifying the QR code
-            if (data && data.length > 0) {
+            // if (data && data.length > 0) {
+            console.log("QR selected")
                 window.Asc.plugin.executeMethod("AddContextMenuItem", [{
                     guid: window.Asc.plugin.guid,
                     items: [{
@@ -158,8 +159,8 @@
                         text: generateText('Modify QR')
                     }]
                 }]);
-            }
-        });
+           // }
+         });
 
     } else {
         // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
