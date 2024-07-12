@@ -152,13 +152,13 @@
             // If OLE objects are selected, add the context menu item for modifying the QR code
             // if (data && data.length > 0) {
             console.log("QR selected")
-                window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-                    guid: window.Asc.plugin.guid,
-                    items: [{
-                        id: 'ModifyQR',
-                        text: generateText('Modify QR')
-                    }]
-                }]);
+                // window.Asc.plugin.executeMethod("AddContextMenuItem", [{
+                //     guid: window.Asc.plugin.guid,
+                //     items: [{
+                //         id: 'ModifyQR',
+                //         text: generateText('Insert QR')
+                //     }]
+                // }]);
            // }
          });
 
