@@ -151,10 +151,10 @@
         items: []
       }]);
     }
-    if (options.type === "Selection") {
+   // if (options.type === "Selection") {
       var oleObjects = window.Asc.plugin.executeMethod("GetSelectedOleObjects")
       console.log("ole object is" + oleObjects);
-    }
+   // }
   };
 
   // Function to generate text
