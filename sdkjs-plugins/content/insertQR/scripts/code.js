@@ -171,35 +171,14 @@
     }
     if (options.type === "Selection") {
       var oleObjects =  window.Asc.plugin.executeMethod("GetSelectedOleObjects")
-      console.log(oleObjects);
+      console.log("ole object is" + oleObjects);
     }
     function generateText(text) {
         return text;
     }
 };
 
-  //commented this bit out
-//   window.Asc.plugin.event_onContextMenuShow = function (options) {
-//     if (options.type === "Selection") { // Check if the text is selected
-//         // Execute method to get selected text
-//         console.log("QR selected")
-//         window.Asc.plugin.executeMethod("GetSelectedOleObjects", function (data) {
-//             window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-//                 guid: window.Asc.plugin.guid,
-//                 items: [{
-//                     id: 'GenerateQR',
-//                     text: generateText('Insert QR')
-//                 }]
-//             }]);
-//         });
-//     } else {
-//         // if the text is not selected, add empty items array. This allows initializing the plugin in any scenario
-//         window.Asc.plugin.executeMethod("AddContextMenuItem", [{
-//             guid: window.Asc.plugin.guid,
-//             items: []
-//         }]);
-//     }
-// };
+
 
 
   // Function to generate text
