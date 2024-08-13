@@ -5,7 +5,7 @@
   window.Asc.plugin.init = function(){ 
       this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
 
-      window.Asc.plugin.attachToolbarMenuClickEvent('insertPhrase', function(data) {
+      this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
         console.log("the data is" + data)
         Asc.scope.text = "hello world"; 
         this.callCommand(function() {
