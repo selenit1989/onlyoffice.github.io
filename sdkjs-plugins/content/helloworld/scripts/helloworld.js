@@ -2,19 +2,19 @@
     
   var text = "Hello world!";
 
-  window.Asc.plugin.init = function(){ 
-      this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
+  window.Asc.plugin.init = function(){  };
+  window.Asc.plugin.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
 
-      this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
+  window.Asc.plugin.attachToolbarMenuClickEvent("insertPhrase", function(data) {
         console.log("the data is" + data)
-        this.callCommand(function() {
+        window.Asc.plugin.callCommand(function() {
           var oDocument = Api.GetDocument();
           var oParagraph = Api.CreateParagraph();
           oParagraph.AddText("hello world");
           oDocument.InsertContent([oParagraph]);
       }, true);
       });
-  };
+ 
   
   function getToolbarItems() {
       const plugin = window.Asc.plugin.info;
