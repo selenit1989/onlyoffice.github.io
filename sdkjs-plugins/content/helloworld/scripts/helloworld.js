@@ -6,14 +6,14 @@
       this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
 
       this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
-        console.log(data)
-      //   Asc.scope.text = text; 
-      //   this.callCommand(function() {
-      //     var oDocument = Api.GetDocument();
-      //     var oParagraph = Api.CreateParagraph();
-      //     oParagraph.AddText(Asc.scope.text);
-      //     oDocument.InsertContent([oParagraph]);
-      // }, true);
+        console.log("the data is" + data)
+        Asc.scope.text = "hello world"; 
+        this.callCommand(function() {
+          var oDocument = Api.GetDocument();
+          var oParagraph = Api.CreateParagraph();
+          oParagraph.AddText(Asc.scope.text);
+          oDocument.InsertContent([oParagraph]);
+      }, true);
       });
   };
   
