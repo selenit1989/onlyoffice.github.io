@@ -2,7 +2,7 @@
     
   var text = "Hello world!";
 
-  window.Asc.plugin.init = function(){  };
+  window.Asc.plugin.init = function(){  
       this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
 
       this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
@@ -14,10 +14,10 @@
           oDocument.InsertContent([oParagraph]);
       }, true);
       });
- 
-  
+   
   function getToolbarItems() {
       const plugin = window.Asc.plugin.info;
+      console.log (plugin)
       let items = {
           guid: plugin.guid,
           tabs: [{
@@ -40,5 +40,7 @@
       
       return items;
   }    
+};
+  
 
 })(window);
