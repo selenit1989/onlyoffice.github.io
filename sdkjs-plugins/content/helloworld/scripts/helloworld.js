@@ -3,11 +3,11 @@
   var text = "Hello world!";
 
   window.Asc.plugin.init = function(){  };
-  window.Asc.plugin.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
+      this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
 
-  window.Asc.plugin.attachToolbarMenuClickEvent("insertPhrase", function(data) {
+      this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
         console.log("the data is" + data)
-        window.Asc.plugin.callCommand(function() {
+        this.callCommand(function() {
           var oDocument = Api.GetDocument();
           var oParagraph = Api.CreateParagraph();
           oParagraph.AddText("hello world");
