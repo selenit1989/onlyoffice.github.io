@@ -81,7 +81,7 @@
                     type: "button",
                     text: "Insert",
                     hint: "insert Hello World phrase",
-                  //icons: "resources/buttons/icon.png", 
+                    icons: "resources/buttons/icon.png", 
                     lockInViewMode: true,
                     enableToggle: false,
                     separator: false
