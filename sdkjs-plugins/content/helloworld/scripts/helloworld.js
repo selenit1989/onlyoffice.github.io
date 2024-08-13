@@ -1,6 +1,4 @@
 (function(window, undefined){
-    
-  var text = "Hello world!";
 
   window.Asc.plugin.init = function(){  
       this.executeMethod("AddToolbarMenuItem", [getToolbarItems()]);
@@ -40,6 +38,4 @@
       return items;
   }    
 };
-
-
 })(window);
