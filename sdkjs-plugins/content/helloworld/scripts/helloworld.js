@@ -16,10 +16,9 @@
       });
    
   function getToolbarItems() {
-      const plugin = window.Asc.plugin.info;
-      console.log (plugin)
+      console.log ()
       let items = {
-          guid: plugin.guid,
+          guid: window.Asc.plugin.info.guid,
           tabs: [{
               id: "hello_world_tab",
               text: "Hello World",
@@ -41,6 +40,6 @@
       return items;
   }    
 };
-  
+
 
 })(window);
