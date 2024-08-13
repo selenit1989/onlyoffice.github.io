@@ -7,11 +7,10 @@
 
       this.attachToolbarMenuClickEvent("insertPhrase", function(data) {
         console.log("the data is" + data)
-        Asc.scope.text = "hello world"; 
         this.callCommand(function() {
           var oDocument = Api.GetDocument();
           var oParagraph = Api.CreateParagraph();
-          oParagraph.AddText(Asc.scope.text);
+          oParagraph.AddText("hello world");
           oDocument.InsertContent([oParagraph]);
       }, true);
       });
