@@ -9,7 +9,7 @@
             var oParagraph = Api.CreateParagraph();
             oParagraph.AddText("Hello world");
             oDocument.InsertContent([oParagraph]);
-        }, true);
+        });
         });
      
     function getToolbarItems() {
