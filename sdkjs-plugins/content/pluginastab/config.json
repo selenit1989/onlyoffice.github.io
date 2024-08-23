@@ -25,8 +25,8 @@
 					"dark": "radial-gradient(circle, #B5BCC3 0%, #737D87 100%)"
 				},
 				"icons": {
-					"light": "resources/store/icons",
-					"dark": "resources/store/icons"
+					"light": "resources/img",
+					"dark": "resources/img"
 				},
 				"categories": ["specAbilities", "work"]
 			}
